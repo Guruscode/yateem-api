@@ -5,15 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Categories extends Model
+class Guardian extends Model
 {
     use HasFactory;
+
     protected $fillable = [
-        'name',
-        'image',
-    ];
-    protected $hidden = [
-        'created_at',
-        'update_at'
+        'first_name',
+        'last_name',
+        'email',
+        'account_type',
+        'password',
     ];
 }

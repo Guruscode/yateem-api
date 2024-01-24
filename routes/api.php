@@ -3,6 +3,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BrandsController;
+use App\Http\Controllers\GuardianController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -22,7 +24,7 @@ use App\Http\Controllers\BrandsController;
 
 Route::group([
     'middleware' => 'api',
-    'prefix' => 'auth'
+    'prefix' => 'v1'
 ], function ($router) {
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register', [AuthController::class, 'register']);
@@ -34,14 +36,13 @@ Route::group([
 
 
     // ====================
-    // ==    Brands    ==
+    // ==    Guardian    ==
     // ====================
 
-Route::controller(BrandsController::class,)->group(function() {
-
-    Route::get('index', 'index');
-    Route::get('show/{id}', 'show');
-    Route::post('store', 'store');
-    Route::put('update_brand/{id}','update_brand');
-    Route::delete('delete_brand/{id}','delete_brand');
-});
+    Route::group([
+        'middleware' => 'api',
+        'prefix' => 'v1'
+    ], function ($router) {
+        Route::post('/update-guardianprofile', [GuardianController::class, 'guardianprofile']);
+    });
+    

@@ -22,16 +22,18 @@ use App\Http\Controllers\GuardianController;
     // == Authentication    ==
     // ====================
 
-Route::group([
-    'middleware' => 'api',
-    'prefix' => 'v1'
-], function ($router) {
-    Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::post('/refresh', [AuthController::class, 'refresh']);
-    Route::get('/user-profile', [AuthController::class, 'userProfile']);    
-});
+        Route::group([
+            'middleware' => 'api',
+            'prefix' => 'v1'
+        ], function ($router) {
+            Route::post('/register', [AuthController::class, 'register']);
+            Route::post('/login', [AuthController::class, 'login']);
+            Route::post('/logout', [AuthController::class, 'logout']);
+            Route::post('/refresh', [AuthController::class, 'refresh']);
+            Route::get('/user-profile', [AuthController::class, 'userProfile']);    
+            Route::post('/update-account', [AuthController::class, 'updateAccount']);
+            Route::post('/add-orphan', [AuthController::class, 'addOrphan']);
+        });
 
 
 

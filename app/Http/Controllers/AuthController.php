@@ -44,11 +44,11 @@ class AuthController extends Controller
             'first_name' => 'required|string|between:2,100',
             'last_name' => 'required|string|between:2,100',
             'email' => 'required|string|email|max:100|unique:users',
-            'account_type' => 'required',
+            'account_type' => 'required|string|in:ADMIN,GUARDIAN,SPONSOR',
             'password' => 'required|string|min:6|confirmed',
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors()->toJson(), 400);
+            return response()->json($validator->errors()->toJson(), 422);
         }
         $user = User::create(array_merge(
                     $validator->validated(),
@@ -60,6 +60,46 @@ class AuthController extends Controller
         ], 201);
     }
 
+
+    public function updateAccount(Request $request) {
+        $user = auth()->user();
+        $validator = Validator::make($request->all(), [
+            'first_name' => 'string|between:2,100',
+            'last_name' => 'string|between:2,100',
+            'email' => 'string|email|max:100|unique:users,email,'.$user->id,
+            'guardian_data' => 'array' // Add guardian specific fields validation if needed
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+    
+        $user->updateAccount($validator->validated());
+    
+        return response()->json([
+            'message' => 'User account updated successfully',
+            'user' => $user
+        ]);
+    }
+    
+
+    public function addOrphan(Request $request) {
+        $user = auth()->user();
+        $validator = Validator::make($request->all(), [
+            // Add validation rules for orphan data
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+    
+        $orphan = $user->addOrphan($validator->validated());
+    
+        return response()->json([
+            'message' => 'Orphan added successfully',
+            'orphan' => $orphan
+        ], 201);
+    }
     /**
      * Log the user out (Invalidate the token).
      *

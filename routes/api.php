@@ -43,6 +43,7 @@ Route::group([
         'middleware' => 'api',
         'prefix' => 'v1'
     ], function ($router) {
-        Route::post('/update-guardianprofile', [GuardianController::class, 'guardianprofile']);
+        Route::post('/complete-account', [GuardianController::class, 'accountCompletion']);
+        Route::put('/guardians/{id}', [GuardianController::class, 'updateGuardian']);
     });
     

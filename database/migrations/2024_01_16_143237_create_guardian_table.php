@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('guardian', function (Blueprint $table) {
+        Schema::create('guardians', function (Blueprint $table) {
 
             //First stage of Data
 
             $table->id();
-            $table->foreignId('user_id')->constrained()->nullble(); // Foreign key linking to users table
+            $table->foreignId('user_id')->constrained(); 
+            // Foreign key linking to users table
             // $table->string('first_name');
             // $table->string('last_name');
             // $table->string('email')->unique();

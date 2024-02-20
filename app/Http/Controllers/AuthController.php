@@ -79,7 +79,7 @@ class AuthController extends Controller
         ], 201);
     }
 // addAdditionalInfo Method// Update Profile Method
-public function updateProfile(Request $request) {
+public function addProfile(Request $request) {
     $user = auth()->user();
 
     // Check if the user is a guardian
@@ -123,6 +123,89 @@ public function updateProfile(Request $request) {
         return response()->json(['error' => 'Only guardians can update their profile'], 403);
     }
 }
+
+public function editProfile(Request $request, $id) {
+    // Retrieve the authenticated user
+    $user = auth()->user();
+
+    // Check if the user is authorized to edit the profile
+    if ($user->id != $id) {
+        return response()->json(['error' => 'Unauthorized'], 403);
+    }
+
+    // Retrieve the guardian associated with the user
+    $guardian = $user->guardian;
+
+    // Check if the guardian profile exists
+    if (!$guardian) {
+        return response()->json(['error' => 'Guardian profile not found'], 404);
+    }
+
+    // Validate the request data
+    $validator = Validator::make($request->all(), [
+        'first_name' => 'required|string',
+        'last_name' => 'required|string',
+        'email' => 'required|string|email|max:100|unique:users,email,'.$user->id,
+        'profile_photo' => 'required|string',
+        'gender' => 'required|string|in:FEMALE,MALE',
+        'date_of_birth' => 'required|date',
+        'marital_status' => 'required|string|in:SINGLE,MARRIED,COMPLICATED',
+        'phone_number' => 'required|string|max:100',
+        'alt_phn_number' => 'nullable|string|max:100',
+        'home_address' => 'required|string|max:255',
+        'state_of_origin' => 'required|string|max:100',
+        'local_government_area' => 'required|string|max:100',
+        'employment_status' => 'required|string|in:EMPLOYED,UNEMPLOYED,SELF_EMPLOYED',
+        'nature_of_occupation' => 'required|string|max:255',
+        'annual_income' => 'required|string|max:100',
+        'employer_name' => 'nullable|string|max:255',
+        'employer_phone' => 'nullable|string|max:100',
+        'employer_address' => 'nullable|string|max:255',
+        'mean_of_identity' => 'required|string|in:NATIONAL_ID,VOTERS_CARD,DRIVER_LICENCE,INTERNATIONAL_PASSWORD,PASSPORT',
+        'identity_number' => 'required|string',
+    ]);
+
+    // Check for validation failure
+    if ($validator->fails()) {
+        return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], 422);
+    }
+
+    // Update user data
+    $user->update([
+        'first_name' => $request->input('first_name'),
+        'last_name' => $request->input('last_name'),
+        'email' => $request->input('email'),
+        'profile_photo' => $request->input('profile_photo'),
+        // Add other user fields as needed
+    ]);
+
+    // Update guardian data
+    $guardian->update([
+        ['user_id' => $user->id],
+        'profile_photo' => $request->input('profile_photo'),
+        'gender' => $request->input('gender'),
+        'date_of_birth' => $request->input('date_of_birth'),
+        'marital_status' => $request->input('marital_status'),
+        'phone_number' => $request->input('phone_number'),
+        'alt_phn_number' => $request->input('alt_phn_number'),
+        'home_address' => $request->input('home_address'),
+        'state_of_origin' => $request->input('state_of_origin'),
+        'local_government_area' => $request->input('local_government_area'),
+        'employment_status' => $request->input('employment_status'),
+        'nature_of_occupation' => $request->input('nature_of_occupation'),
+        'annual_income' => $request->input('annual_income'),
+        'employer_name' => $request->input('employer_name'),
+        'employer_phone' => $request->input('employer_phone'),
+        'employer_address' => $request->input('employer_address'),
+        'mean_of_identity' => $request->input('mean_of_identity'),
+        'identity_number' => $request->input('identity_number'),
+        // Add other guardian fields as needed
+    ]);
+
+    return response()->json(['status' => true, 'message' => 'Profile updated successfully']);
+}
+
+
 public function addOrphan(Request $request) {
     // Retrieve the authenticated user
     $user = auth()->user();
@@ -190,6 +273,67 @@ public function addOrphan(Request $request) {
 }
 
 
+
+public function editOrphan(Request $request, $id) {
+    // Retrieve the authenticated user
+    $user = auth()->user();
+
+    // Check if the user is a guardian
+    if ($user->account_type !== 'GUARDIAN') {
+        return response()->json(['error' => 'Only guardians can edit orphans'], 403);
+    }
+
+    // Retrieve the orphan associated with the guardian
+    $orphan = $user->guardian->orphans()->find($id);
+
+    // Check if the orphan exists
+    if (!$orphan) {
+        return response()->json(['error' => 'Orphan not found'], 404);
+    }
+
+    // Validate the request data
+    $validator = Validator::make($request->all(), [
+        'first_name' => 'required|string',
+        'last_name' => 'required|string',
+        'profile_photo' => 'required|string',
+        'gender' => 'required|string|in:FEMALE,MALE',
+        'date_of_birth' => 'required|date',
+        'state_of_origin' => 'required|string|max:100',
+        'local_government' => 'required|string|max:100',
+        'in_school' => 'required|boolean',
+        'school_name' => 'nullable|string|max:255',
+        'school_address' => 'nullable|string|max:255',
+        'school_contact_person' => 'nullable|string|max:255',
+        'phone_number_of_contact_person' => 'nullable|string|max:100',
+        'class' => 'nullable|string|max:100',
+        'account_status' => 'nullable|string|in:PENDING,APPROVED,REJECTED',
+        'unique_code' => 'nullable|string|max:255',
+    ]);
+
+    // Check for validation failure
+    if ($validator->fails()) {
+        return response()->json(['error' => 'Validation failed', 'details' => $validator->errors()], 422);
+    }
+
+    // Update the orphan data
+    try {
+        $orphan->update($validator->validated());
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Orphan updated successfully',
+            'orphan' => $orphan
+        ], 200);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => false,
+            'error' => 'Failed to update orphan',
+            'details' => $e->getMessage()
+        ], 500);
+    }
+}
+
+
     /**
      * Log the user out (Invalidate the token).
      *
@@ -213,7 +357,25 @@ public function addOrphan(Request $request) {
      * @return \Illuminate\Http\JsonResponse
      */
     public function userProfile() {
-        return response()->json(auth()->user());
+        // Retrieve the authenticated user
+        $user = auth()->user();
+    
+        // Check if the user is a guardian
+        if ($user->account_type === 'GUARDIAN') {
+            // Retrieve the guardian profile associated with the user
+            $guardianProfile = $user->guardian;
+            
+            // Return both user and guardian profiles
+            return response()->json([
+                'user' => $user,
+                // 'guardian_profile' => $guardianProfile,
+            ]);
+        } else {
+            // If the user is not a guardian, return only the user profile
+            return response()->json([
+                'user' => $user,
+            ]);
+        }
     }
     /**
      * Get the token array structure.

@@ -31,8 +31,10 @@ use App\Http\Controllers\GuardianController;
             Route::post('/logout', [AuthController::class, 'logout']);
             Route::post('/refresh', [AuthController::class, 'refresh']);
             Route::get('/user-profile', [AuthController::class, 'userProfile']);    
-            Route::post('/update-account', [AuthController::class, 'updateProfile']);
+            Route::post('/update-account', [AuthController::class, 'addProfile']);
             Route::post('/add-orphan', [AuthController::class, 'addOrphan']);
+            Route::put('/editProfile/{id}', [AuthController::class, 'editProfile']);
+            Route::put('/editOrphan/{id}', [AuthController::class, 'editOrphan']);
         });
 
 

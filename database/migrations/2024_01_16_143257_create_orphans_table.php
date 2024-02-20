@@ -13,9 +13,7 @@ return new class extends Migration
     {
         Schema::create('orphans', function (Blueprint $table) {
             $table->id();
-            $table->tinyInteger('orphan_id');
-            $table->tinyInteger('guardian_id');
-
+            $table->foreignId('guardians_id')->constrained()->onDelete('cascade');
             $table->string('profile_photo')->nullable(); 
             $table->enum('gender', ['FEMALE', 'MALE']);
             $table->string('first_name');
@@ -23,18 +21,17 @@ return new class extends Migration
             $table->string('guidian_affidavit')->nullable();
             $table->string('state_of_origin');
             $table->string('local_government');
-            $table->string('date_of_birth');
-
-
-            $table->enum('in_school', ['YES','NO']);
-            $table->string('school_name');
-            $table->string('school_address');
-            $table->string('school_contact_person');
-            $table->string('phone_number_of_contact_person');
-            $table->string('class');
-
-
+            $table->date('date_of_birth');
+            $table->enum('in_school', ['YES', 'NO']);
+            $table->string('school_name')->nullable();
+            $table->string('school_address')->nullable();
+            $table->string('school_contact_person')->nullable();
+            $table->string('phone_number_of_contact_person')->nullable();
+            $table->enum('account_status', ['PENDING', 'APPROVED', 'REJECTED',]);
+            $table->string('unique_code');
+            $table->string('class')->nullable();
             $table->timestamps();
+ 
         });
     }
 

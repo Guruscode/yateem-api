@@ -39,7 +39,11 @@ class Guardians extends Model
 
      // Define the relationship - a Guardian has many Users
      public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
+     {
+         return $this->belongsTo(User::class, 'user_id');
+     }
+     public function orphans()
+     {
+         return $this->hasMany(Orphans::class);
+     }
 }

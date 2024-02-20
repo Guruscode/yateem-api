@@ -16,14 +16,7 @@ return new class extends Migration
             //First stage of Data
 
             $table->id();
-            $table->foreignId('user_id')->constrained(); 
-            // Foreign key linking to users table
-            // $table->string('first_name');
-            // $table->string('last_name');
-            // $table->string('email')->unique();
-            // $table->timestamp('email_verified_at')->nullable();
-            // $table->string('password');
-            // $table->rememberToken();
+            $table->foreignId('user_id')->constrained('users');
 
             //Second stage of data
 
@@ -61,6 +54,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('guardian');
+        Schema::dropIfExists('guardians');
     }
 };

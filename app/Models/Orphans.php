@@ -9,7 +9,6 @@ class Orphans extends Model
 {
     use HasFactory;
 
-
     protected $fillable = [
         'guardian_id',
         'profile_photo',
@@ -26,11 +25,13 @@ class Orphans extends Model
         'school_contact_person',
         'phone_number_of_contact_person',
         'class',
+        'account_status',
+        'unique_code',
     ];
 
-
+     
     public function guardian()
     {
-        return $this->belongsTo(Guardians::class);
+        return $this->belongsTo(Guardians::class, 'guardian_id');
     }
 }

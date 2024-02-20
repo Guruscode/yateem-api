@@ -67,6 +67,6 @@ class User extends Authenticatable implements JWTSubject
 
     public function guardian()
     {
-        return $this->hasOne(Guardians::class);
+        return $this->hasOne(Guardians::class, 'user_id');
     }
 }

@@ -31,7 +31,7 @@ use App\Http\Controllers\GuardianController;
             Route::post('/logout', [AuthController::class, 'logout']);
             Route::post('/refresh', [AuthController::class, 'refresh']);
             Route::get('/user-profile', [AuthController::class, 'userProfile']);    
-            Route::post('/update-account', [AuthController::class, 'updateAccount']);
+            Route::post('/update-account', [AuthController::class, 'updateProfile']);
             Route::post('/add-orphan', [AuthController::class, 'addOrphan']);
         });
 
@@ -41,11 +41,11 @@ use App\Http\Controllers\GuardianController;
     // ==    Guardian    ==
     // ====================
 
-    Route::group([
-        'middleware' => 'api',
-        'prefix' => 'v1'
-    ], function ($router) {
-        Route::post('/complete-account', [GuardianController::class, 'accountCompletion']);
-        Route::put('/guardians/{id}', [GuardianController::class, 'updateGuardian']);
-    });
+    // Route::group([
+    //     'middleware' => 'api',
+    //     'prefix' => 'v1'
+    // ], function ($router) {
+    //     Route::post('/complete-account', [GuardianController::class, 'accountCompletion']);
+    //     Route::put('/guardians/{id}', [GuardianController::class, 'updateGuardian']);
+    // });
     

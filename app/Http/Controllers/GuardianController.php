@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\SponsorshipRequests;
 use App\Models\User;
 use App\Models\Guardians;
 use Illuminate\Http\Request;
+use App\Models\SponsorshipRequest;
 use  Illuminate\Support\Facades\Validator;
-
+use Illuminate\Http\Response;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 class GuardianController extends Controller
 {
 
@@ -181,6 +186,31 @@ class GuardianController extends Controller
             ], 500);
         }
     }
-    
+
+    public function createSponsorshipRequest (Request $request)
+    {
+        try {
+            $validatedData = $request->validate([
+                'guardian_id' => 'required|exists:guardians,id',
+                'orphan_id' => 'required|exists:orphans,id',
+                'need' => 'required',
+                'description' => 'required',
+                'amount_needed' => 'required|numeric|min:0',
+                'current_amount' => 'nullable|numeric|min:0',
+            ]);
+        } catch (ValidationException $e) {
+            return response()->json(['errors' => $e->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $sponsorshipRequest = SponsorshipRequests::create($validatedData);
+        } catch (QueryException $e) {
+            return response()->json(['error' => 'Database error: ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return response()->json($sponsorshipRequest, Response::HTTP_CREATED);
+    }
+   
+
 
 }

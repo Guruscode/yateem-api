@@ -194,25 +194,36 @@ public function editProfile(Request $request, $id) {
     
         // Check if the user is a guardian
         if ($user->account_type === 'GUARDIAN') {
-            // Retrieve the guardian profile associated with the user
-            $guardianProfile = $user->guardian;
+            // Check if the guardian profile is associated with the user
+            if ($user->guardian) {
+                // Retrieve the guardian profile associated with the user
+                $guardianProfile = $user->guardian;
     
-            // Retrieve orphans associated with this guardian
-            $orphans = $guardianProfile->orphans()->get();
+                // Retrieve orphans associated with this guardian
+                $orphans = $guardianProfile->orphans()->get();
     
-            // Return user profile, guardian profile, and orphans
-            return response()->json([
-                'user' => $user,
-                'guardian_profile' => $guardianProfile,
-                'orphans' => $orphans,
-            ]);
+                // Return user profile, guardian profile, and orphans
+                return response()->json([
+                    'user' => $user,
+                    'guardian_profile' => $guardianProfile,
+                    'orphans' => $orphans,
+                ]);
+            } else {
+                // Return an error response if guardian profile is not found
+                return response()->json([
+                    'status' => true,
+                    'error' => 'Guardian profile not found for this user.',
+                ], 404);
+            }
         } else {
             // If the user is not a guardian, return only the user profile
             return response()->json([
+                'true' => true,
                 'user' => $user,
             ]);
         }
     }
+    
     
     
     /**

@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Guardians;
+use App\Models\Orphans;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
@@ -195,11 +196,15 @@ public function editProfile(Request $request, $id) {
         if ($user->account_type === 'GUARDIAN') {
             // Retrieve the guardian profile associated with the user
             $guardianProfile = $user->guardian;
-            
-            // Return both user and guardian profiles
+    
+            // Retrieve orphans associated with this guardian
+            $orphans = $guardianProfile->orphans()->get();
+    
+            // Return user profile, guardian profile, and orphans
             return response()->json([
                 'user' => $user,
-                // 'guardian_profile' => $guardianProfile,
+                'guardian_profile' => $guardianProfile,
+                'orphans' => $orphans,
             ]);
         } else {
             // If the user is not a guardian, return only the user profile
@@ -208,6 +213,8 @@ public function editProfile(Request $request, $id) {
             ]);
         }
     }
+    
+    
     /**
      * Get the token array structure.
      *

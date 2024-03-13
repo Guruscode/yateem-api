@@ -34,6 +34,12 @@ use App\Http\Controllers\GuardianController;
             Route::post('/refresh', [AuthController::class, 'refresh']);
             Route::get('/user-profile', [AuthController::class, 'userProfile']);    
             Route::put('/editProfile/{id}', [AuthController::class, 'editProfile']);
+                // Forget Password
+            Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+
+          // Reset Password
+            Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+
            
             // Route::post('/add-orphan', [AuthController::class, 'addOrphan']);
             // Route::put('/editOrphan/{id}', [AuthController::class, 'editOrphan']);

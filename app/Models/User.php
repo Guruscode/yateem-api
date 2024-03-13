@@ -10,9 +10,11 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
+
 class User extends Authenticatable implements JWTSubject
 {
     use HasApiTokens, HasFactory, Notifiable;
+    
 
     /**
      * The attributes that are mass assignable.
@@ -69,4 +71,10 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasOne(Guardians::class, 'user_id');
     }
+
+   // Get the e-mail address where password reset links are sent.
+   public function getEmailForPasswordReset()
+   {
+       return $this->email;
+   }
 }

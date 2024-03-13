@@ -21,9 +21,9 @@ use App\Http\Controllers\PasswordResetController;
 
 
 
-    // ====================
-    // == Authentication    ==
-    // ====================
+        // ====================
+        // == Authentication Actions    ==
+        // ====================
 
         Route::group([
             'middleware' => 'api',
@@ -35,20 +35,28 @@ use App\Http\Controllers\PasswordResetController;
             Route::post('/refresh', [AuthController::class, 'refresh']);
             Route::get('/user-profile', [AuthController::class, 'userProfile']);    
             Route::put('/editProfile/{id}', [AuthController::class, 'editProfile']);
-            // Route::post('/add-orphan', [AuthController::class, 'addOrphan']);
-            // Route::put('/editOrphan/{id}', [AuthController::class, 'editOrphan']);
+            Route::post('/change-password', [AuthController::class, 'changePassword']);
+
         });
 
 
-        // Non authenticated Actions
+        // ====================
+        // ==  Non authenticated Actions    ==
+        // ====================
 
-    Route::group(['prefix' => 'v1' ], function () {
-        Route::post('/forgot-password', [PasswordResetController::class, 'forgotPassword']);
-        Route::post('/reset-password', [PasswordResetController::class, 'resetPassword']);
-    });
+    
+
+        Route::group(['prefix' => 'v1' ], function () {
+            Route::post('/forgot-password', [PasswordResetController::class, 'forgotPassword']);
+            Route::post('/reset-password', [PasswordResetController::class, 'resetPassword']);
+        });
 
 
-        // Routes for Guardians
+        // ====================
+        // == Routes for Guardians and orpans    ==
+        // ====================
+
+   
         Route::group([
             'middleware' => 'api',
             'prefix' => 'v1/guardian'
@@ -60,7 +68,11 @@ use App\Http\Controllers\PasswordResetController;
             Route::post('/upload-document', [GuardianController::class, 'uploadDocument']);
         });
 
-        // Routes for Sponsors
+
+        // ====================
+        // == Routes for Sponsors    ==
+        // ====================
+
         Route::group([
             'middleware' => 'api',
             'prefix' => 'v1/sponsor'
@@ -70,7 +82,12 @@ use App\Http\Controllers\PasswordResetController;
             Route::post('/make-payment', [SponsorController::class, 'makePayment']);
         });
 
-        // Routes for Admin
+
+
+         // ====================
+        // == Routes for Admin    ==
+        // ====================
+
         Route::group([
             'middleware' => 'api',
             'prefix' => 'v1/admin'

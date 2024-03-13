@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password; 
 use  Illuminate\Support\Facades\Validator;
@@ -171,6 +172,27 @@ public function editProfile(Request $request, $id) {
 }
 
 
+
+public function changePassword(Request $request)
+{
+    $request->validate([
+        'old_password' => 'required|string',
+        'password' => 'required|string|confirmed|min:8',
+    ]);
+
+    $user = Auth::user();
+
+    // Verify the old password
+    if (!Hash::check($request->old_password, $user->password)) {
+        return response()->json(['error' => 'Incorrect old password'], 401);
+    }
+
+    // Update the user's password
+    $user->password = bcrypt($request->password);
+    $user->save();
+
+    return response()->json(['message' => 'Password has been changed successfully']);
+}
     /**
      * Log the user out (Invalidate the token).
      *

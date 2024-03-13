@@ -64,6 +64,8 @@ use App\Http\Controllers\PasswordResetController;
             Route::post('/update-account', [GuardianController::class, 'addProfile']);
             Route::post('/add-orphan', [GuardianController::class, 'addOrphan']);
             Route::put('/edit-orphan/{id}', [GuardianController::class, 'editOrphan']);
+            Route::get('/guardian/orphans', [GuardianController::class, 'viewOrphans']);
+
             Route::post('/sponsorship-request', [GuardianController::class, 'createSponsorshipRequest']);
             Route::post('/upload-document', [GuardianController::class, 'uploadDocument']);
         });

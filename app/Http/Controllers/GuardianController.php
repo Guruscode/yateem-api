@@ -215,30 +215,28 @@ class GuardianController extends Controller
         ]);
     }
     
-    public function createSponsorshipRequest (Request $request)
+    public function createSponsorshipRequest(Request $request)
     {
         try {
             $validatedData = $request->validate([
                 'guardian_id' => 'required|exists:guardians,id',
                 'orphan_id' => 'required|exists:orphans,id',
-                'need' => 'required',
-                'description' => 'required',
+                'need' => 'required|in:EDUCATION,HEALTH,CLOTHING,FEEDING',
+                'description' => 'required|string',
                 'amount_needed' => 'required|numeric|min:0',
                 'current_amount' => 'nullable|numeric|min:0',
+                'request_status' => 'nullable|string|in:PENDING,APPROVED,REJECTED',
             ]);
         } catch (ValidationException $e) {
             return response()->json(['errors' => $e->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-
+    
         try {
             $sponsorshipRequest = SponsorshipRequests::create($validatedData);
-        } catch (QueryException $e) {
+        } catch (\Exception $e) {
             return response()->json(['error' => 'Database error: ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
+    
         return response()->json($sponsorshipRequest, Response::HTTP_CREATED);
     }
-   
-
-
 }

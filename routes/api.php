@@ -6,6 +6,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BrandsController;
 use App\Http\Controllers\SponsorController;
 use App\Http\Controllers\GuardianController;
+use App\Http\Controllers\PasswordResetController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,16 +35,18 @@ use App\Http\Controllers\GuardianController;
             Route::post('/refresh', [AuthController::class, 'refresh']);
             Route::get('/user-profile', [AuthController::class, 'userProfile']);    
             Route::put('/editProfile/{id}', [AuthController::class, 'editProfile']);
-                // Forget Password
-            Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
-
-          // Reset Password
-            Route::post('/reset-password', [AuthController::class, 'resetPassword']);
-
-           
             // Route::post('/add-orphan', [AuthController::class, 'addOrphan']);
             // Route::put('/editOrphan/{id}', [AuthController::class, 'editOrphan']);
         });
+
+
+        // Non authenticated Actions
+
+    Route::group(['prefix' => 'v1' ], function () {
+        Route::post('/forgot-password', [PasswordResetController::class, 'forgotPassword']);
+        Route::post('/reset-password', [PasswordResetController::class, 'resetPassword']);
+    });
+
 
         // Routes for Guardians
         Route::group([

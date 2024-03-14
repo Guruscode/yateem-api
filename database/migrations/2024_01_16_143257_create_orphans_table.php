@@ -30,6 +30,7 @@ return new class extends Migration
             $table->enum('account_status', ['PENDING', 'APPROVED', 'REJECTED',]);
             $table->string('unique_code');
             $table->string('class')->nullable();
+            $table->enum('delete_request_status', ['PENDING', 'APPROVED', 'REJECTED'])->default('PENDING');
             $table->timestamps();
  
         });

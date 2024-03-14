@@ -67,7 +67,7 @@ use App\Http\Controllers\PasswordResetController;
             Route::get('/guardian/orphans', [GuardianController::class, 'viewOrphans']);
 
             Route::post('/sponsorship-request', [GuardianController::class, 'createSponsorshipRequest']);
-            Route::post('/upload-document', [GuardianController::class, 'uploadDocument']);
+            Route::post('/orphans/{id}/delete-request', [GuardianController::class, 'requestDelete']);
         });
 
 
@@ -94,8 +94,20 @@ use App\Http\Controllers\PasswordResetController;
             'middleware' => 'api',
             'prefix' => 'v1/admin'
         ], function ($router) {
-            Route::get('/pending-orphans', [AdminController::class, 'viewPendingOrphans']);
-            Route::put('/approve-orphan/{id}', [AdminController::class, 'approveOrphan']);
-            Route::get('/guardian-profiles', [AdminController::class, 'viewGuardianProfiles']);
-            Route::put('/approve-sponsorship/{id}', [AdminController::class, 'approveSponsorship']);
+          
+           //  Guardian
+            Route::post('/guardians', [AdminController::class, 'createGuardian']);
+            Route::get('/guardians', [AdminController::class, 'listGuardians']);
+            Route::get('/guardians/{id}', [AdminController::class, 'viewGuardian']);
+            Route::put('/guardians/{id}', [AdminController::class, 'editGuardian']);
+            Route::delete('/guardians/{id}', [AdminController::class, 'deleteGuardian']);
+          
+          
+              //Orphan
+            Route::post('/orphans', [AdminController::class, 'createOrphan']);
+            Route::put('/orphans/{id}', [AdminController::class, 'editOrphan']);
+            Route::get('/orphans', [AdminController::class, 'viewOrphans']);
+            Route::delete('/orphans/{id}', [AdminController::class, 'deleteOrphan']);
+                
+       
         });

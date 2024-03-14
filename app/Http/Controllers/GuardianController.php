@@ -2,16 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\SponsorshipRequests;
 use App\Models\User;
+use App\Models\Orphans;
 use App\Models\Guardians;
 use Illuminate\Http\Request;
-use App\Models\SponsorshipRequest;
-use  Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Response;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Database\QueryException;
+use App\Models\SponsorshipRequest;
 use Illuminate\Support\Facades\DB;
+use App\Models\SponsorshipRequests;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\QueryException;
+use  Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
+
 class GuardianController extends Controller
 {
 
@@ -239,4 +242,29 @@ class GuardianController extends Controller
     
         return response()->json($sponsorshipRequest, Response::HTTP_CREATED);
     }
+
+    public function requestDelete($id)
+    {
+        try {
+        // Find the orphan by ID
+            $orphan = Orphans::findOrFail($id);
+
+         // Check if the authenticated user is the guardian of the orphan
+            if ($orphan->guardian_id !== auth()->id()) {
+                throw new \Exception('You do not have permission to delete the orphan.');
+            }
+                
+            // Set the delete_requested flag to true
+            $orphan->delete_requested = true;
+            $orphan->save();
+    
+            // Return a success response
+            return response()->json(['message' => 'Delete request for the orphan has been sent to the admin.'], 200);
+        } catch (\Exception $e) {
+            // Return an error response if an exception occurs
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+    
+    
 }

@@ -265,7 +265,7 @@ public function changePassword(Request $request)
             'status' => true,
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 120,
+            'expires_in' => auth()->factory()->getTTL() * 1440,
             'user' => auth()->user()
         ]);
     }

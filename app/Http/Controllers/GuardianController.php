@@ -220,6 +220,22 @@ class GuardianController extends Controller
     
     public function createSponsorshipRequest(Request $request)
     {
+          // Retrieve the authenticated user
+          $user = auth()->user();
+    
+          // Check if the user is a guardian
+          if ($user->account_type !== 'GUARDIAN') {
+              return response()->json(['error' => 'Only guardians can view orphans'], 403);
+          }
+      
+          // Retrieve the guardian associated with the user
+          $guardian = $user->guardian;
+      
+          // Check if the guardian profile exists
+          if (!$guardian) {
+              return response()->json(['error' => 'Guardian profile not found'], 404);
+          }
+      
         try {
             $validatedData = $request->validate([
                 'guardian_id' => 'required|exists:guardians,id',

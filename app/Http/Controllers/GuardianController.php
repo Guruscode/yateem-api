@@ -7,6 +7,7 @@ use App\Models\Orphans;
 use App\Models\Guardians;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Models\OrphanActivity;
 use App\Models\SponsorshipRequest;
 use Illuminate\Support\Facades\DB;
 use App\Models\SponsorshipRequests;
@@ -281,6 +282,71 @@ class GuardianController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+    public function createActivities(Request $request)
+    {
+        try {
+            // Retrieve the authenticated user
+            $user = auth()->user();
+    
+            // Check if the user is a guardian
+            if ($user->account_type !== 'GUARDIAN') {
+                return response()->json(['error' => 'Only guardians can create orphan activities'], 403);
+            }
+    
+            // Retrieve the guardian associated with the user
+            $guardian = $user->guardian;
+    
+            // Check if the guardian profile exists
+            if (!$guardian) {
+                return response()->json(['error' => 'Guardian profile not found'], 404);
+            }
+    
+            // Validate the request data
+            $validatedData = $request->validate([
+                'orphan_id' => ['nullable', 'exists:orphans,id', function ($attribute, $value, $fail) use ($guardian) {
+                    // Validate that the orphan belongs to the guardian
+                    if (!$guardian->orphans->contains($value)) {
+                        $fail('The specified orphan does not belong to this guardian.');
+                    }
+                }],
+                'activity' => 'required|in:EDUCATION,HEALTH,CLOTHING,FEEDING',
+                'description' => 'nullable|string',
+                'upload_document' => 'nullable|string',
+                'insert_link' => 'nullable|string',
+                'name_of_health_facility' => 'nullable|string',
+                'card_id_number' => 'nullable|string',
+                'type_of_disease' => 'nullable|string',
+                'feeding_program' => 'nullable|string',
+                'feeding_formula' => 'nullable|string',
+                'size_of_shirt' => 'nullable|string',
+                'size_of_trouser' => 'nullable|string',
+                'arms_length' => 'nullable|string',
+                'name_of_school_contact_person' => 'nullable|string',
+                'phone_number' => 'nullable|string',
+                'date_of_enrollment' => 'nullable|date',
+            ]);
+    
+            // Add the guardian_id to the validated data
+            $validatedData['guardian_id'] = $guardian->id;
+    
+            // Create the orphan activity
+            $orphanActivity = OrphanActivity::create($validatedData);
+    
+            return response()->json(['message' => 'Orphan activity created successfully', 'data' => $orphanActivity], 201);
+        } catch (ValidationException $e) {
+            return response()->json(['error' => $e->errors()], 422);
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->errorInfo[1] == 1452) {
+                return response()->json(['error' => 'The provided orphan_id does not exist or does not belong to this guardian'], 422);
+            }
+            return response()->json(['error' => 'Database error: ' . $e->getMessage()], 500);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Unexpected error: ' . $e->getMessage()], 500);
+        }
+    }
+    
+    
     
     
 }

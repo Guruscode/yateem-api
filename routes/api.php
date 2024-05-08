@@ -1,24 +1,12 @@
 <?php
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\BrandsController;
 use App\Http\Controllers\DevController;
 use App\Http\Controllers\SponsorController;
 use App\Http\Controllers\GuardianController;
 use App\Http\Controllers\PasswordResetController;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
 
 
 
@@ -47,7 +35,6 @@ use App\Http\Controllers\PasswordResetController;
 
 
         Route::get('/getusers', [DevController::class, 'index']);
-    
 
         Route::group(['prefix' => 'v1' ], function () {
             Route::post('/forgot-password', [PasswordResetController::class, 'forgotPassword']);
@@ -68,8 +55,8 @@ use App\Http\Controllers\PasswordResetController;
             Route::post('/add-orphan', [GuardianController::class, 'addOrphan']);
             Route::put('/edit-orphan/{id}', [GuardianController::class, 'editOrphan']);
             Route::get('/guardian/orphans', [GuardianController::class, 'viewOrphans']);
-
             Route::post('/sponsorship-request', [GuardianController::class, 'createSponsorshipRequest']);
+            Route::post('/createActivities', [GuardianController::class, 'createActivities']);
             Route::post('/orphans/{id}/delete-request', [GuardianController::class, 'requestDelete']);
         });
 

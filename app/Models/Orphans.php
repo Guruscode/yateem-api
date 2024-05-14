@@ -34,6 +34,7 @@ class Orphans extends Model
     {
         return $this->belongsTo(Guardians::class, 'guardian_id');
     }
+    
 
     // public function details()
     // {

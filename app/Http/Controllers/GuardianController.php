@@ -260,43 +260,51 @@ class GuardianController extends Controller
         return response()->json($sponsorshipRequest, Response::HTTP_CREATED);
     }
 
-    public function requestDelete($id)
-    {
-          // Retrieve the authenticated user
-          $user = auth()->user();
-    
-          // Check if the user is a guardian
-          if ($user->account_type !== 'GUARDIAN') {
-              return response()->json(['error' => 'Only guardians can view orphans'], 403);
-          }
-      
-          // Retrieve the guardian associated with the user
-          $guardian = $user->guardian;
-      
-          // Check if the guardian profile exists
-          if (!$guardian) {
-              return response()->json(['error' => 'Guardian profile not found'], 404);
-          }
-        try {
-        // Find the orphan by ID
-            $orphan = Orphans::findOrFail($id);
+ public function requestDelete($id)
+{
+    // Retrieve the authenticated user
+    $user = auth()->user();
 
-         // Check if the authenticated user is the guardian of the orphan
-            if ($orphan->guardian_id !== auth()->id()) {
-                throw new \Exception('You do not have permission to delete the orphan.');
-            }
-                
-            // Set the delete_requested flag to true
-            $orphan->delete_requested = true;
-            $orphan->save();
-    
-            // Return a success response
-            return response()->json(['message' => 'Delete request for the orphan has been sent to the admin.'], 200);
-        } catch (\Exception $e) {
-            // Return an error response if an exception occurs
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
+    // Check if the user is a guardian
+    if ($user->account_type !== 'GUARDIAN') {
+        return response()->json(['error' => 'Only guardians can view orphans'], 403);
     }
+
+    // Retrieve the guardian associated with the user
+    $guardian = $user->guardian;
+
+    // Check if the guardian profile exists
+    if (!$guardian) {
+        return response()->json(['error' => 'Guardian profile not found'], 404);
+    }
+
+    try {
+        // Find the orphan by ID
+        $orphan = Orphans::findOrFail($id);
+
+        // Check if the authenticated user is the guardian of the orphan
+        if ($orphan->guardian_id !== $guardian->id) {
+            throw new \Exception('You do not have permission to delete the orphan.');
+        }
+
+        // Set the delete_requested flag to true
+        $orphan->delete_requested = true;
+        
+        // Set the delete reason if provided
+        if (request()->has('delete_reason')) {
+            $orphan->delete_reason = request()->input('delete_reason');
+        }
+        
+        $orphan->save();
+
+        // Return a success response
+        return response()->json(['message' => 'Delete request for the orphan has been sent to the admin.'], 200);
+    } catch (\Exception $e) {
+        // Return an error response if an exception occurs
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
+}
+
 
     public function orphanCode($unique_code)
     {
@@ -316,12 +324,20 @@ class GuardianController extends Controller
              return response()->json(['error' => 'Guardian profile not found'], 404);
          }
         $orphan = Orphans::where('unique_code', $unique_code)->first();
+        $SponsorshipRequests = SponsorshipRequests::where('orphan_id', $orphan->id)->get();
+        
 
         if (!$orphan) {
             return response()->json(['error' => 'User not found'], 404);
         }
 
-        return response()->json($orphan);
+        $mergedData = [
+            'status' => true,
+            'orphan' => $orphan,
+            'SponsorshipRequest' => $SponsorshipRequests
+        ];
+
+        return response()->json($mergedData);
     }
     public function createActivities(Request $request)
     {

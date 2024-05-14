@@ -262,6 +262,21 @@ class GuardianController extends Controller
 
     public function requestDelete($id)
     {
+          // Retrieve the authenticated user
+          $user = auth()->user();
+    
+          // Check if the user is a guardian
+          if ($user->account_type !== 'GUARDIAN') {
+              return response()->json(['error' => 'Only guardians can view orphans'], 403);
+          }
+      
+          // Retrieve the guardian associated with the user
+          $guardian = $user->guardian;
+      
+          // Check if the guardian profile exists
+          if (!$guardian) {
+              return response()->json(['error' => 'Guardian profile not found'], 404);
+          }
         try {
         // Find the orphan by ID
             $orphan = Orphans::findOrFail($id);
@@ -283,6 +298,31 @@ class GuardianController extends Controller
         }
     }
 
+    public function orphanCode($unique_code)
+    {
+         // Retrieve the authenticated user
+         $user = auth()->user();
+    
+         // Check if the user is a guardian
+         if ($user->account_type !== 'GUARDIAN') {
+             return response()->json(['error' => 'Only guardians can view orphans'], 403);
+         }
+     
+         // Retrieve the guardian associated with the user
+         $guardian = $user->guardian;
+     
+         // Check if the guardian profile exists
+         if (!$guardian) {
+             return response()->json(['error' => 'Guardian profile not found'], 404);
+         }
+        $orphan = Orphans::where('unique_code', $unique_code)->first();
+
+        if (!$orphan) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        return response()->json($orphan);
+    }
     public function createActivities(Request $request)
     {
         try {

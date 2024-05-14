@@ -58,6 +58,8 @@ use App\Http\Controllers\PasswordResetController;
             Route::post('/sponsorship-request', [GuardianController::class, 'createSponsorshipRequest']);
             Route::post('/createActivities', [GuardianController::class, 'createActivities']);
             Route::post('/orphans/{id}/delete-request', [GuardianController::class, 'requestDelete']);
+            Route::get('/orphans/{unique_code}', [GuardianController::class, 'orphanCode']);
+
         });
 
 
